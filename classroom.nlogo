@@ -6,6 +6,10 @@ turtles-own [
   infection-state
 ]
 
+students-own [
+  sitting
+]
+
 breed [students student]
 breed [teachers teacher]
 
@@ -39,60 +43,68 @@ to spawn-teachers-table
 end
 
 to spawn-students
-;  let x 16
-;  let y 16
-;
-;  repeat 5 [
-;    set x 16
-;    repeat 9 [
-;      create-turtles 1 [
-;        set shape "person"
-;        move-to patch x y
-;      ]
-;      set x x - 1
-;    ]
-;    set y y - 1
-;  ]
   create-students 45 [
+    setxy 16 -8
     set shape "person"
-    move-to one-of patches
-  ]
+    set sitting 0
+    set color one-of remove brown base-colors ; sets the color to a random color that is not brown
+]
 end
-
 to go
-  move-students
+  ifelse ticks mod 600 < 500 [
+    move-students-to-chairs
+  ] [
+    scatter-students
+  ]
   tick
 end
 
-to move-students
-  ask students [
-    let target-chair min-one-of (patches in-cone 100 360 with [pcolor = brown]) [distance myself]
-    ifelse target-chair = patch-here [
-      if count turtles-on patch-here > 1
-      [
-        rt random 360
-        fd 1
-      ]
-    ]
-    [
-      ifelse ((target-chair != nobody) and (not any? turtles-on target-chair))
-      [
-        set heading(towards target-chair)
-        let distance-to-chair round distance target-chair
-
-        let movement min list distance-to-chair 2
-        fd movement
-      ]
-      [
-        rt random 360
+to move-students-to-chairs
+  ask students with [sitting = 0] [
+    let targets (patches with [pcolor = brown] with [not any? turtles-here])
+    let target min-one-of targets [distance myself]
+    if target != nobody [
+      face target
+      ifelse distance target <= 1 [
+        move-to target
+        set sitting 1
+      ] [
         fd 1
       ]
     ]
   ]
 ;  ask students [
-;    rt random 360
-;    fd 1
+;    let target-chair min-one-of (patches in-cone 100 360 with [pcolor = brown]) [distance myself]
+;    ifelse target-chair = patch-here [
+;      if count turtles-on patch-here > 1
+;      [
+;        rt random 360
+;        fd 1
+;      ]
+;    ]
+;    [
+;      ifelse ((target-chair != nobody) and (not any? turtles-on target-chair))
+;      [
+;        set heading(towards target-chair)
+;        let distance-to-chair round distance target-chair
+
+;        let movement min list distance-to-chair 2
+;        fd movement
+;      ]
+;      [
+;        rt random 360
+;        fd 1
+;      ]
+;    ]
 ;  ]
+end
+
+to scatter-students
+  ask students [
+    set sitting 0
+    rt random 360
+    fd 1
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -109,8 +121,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
