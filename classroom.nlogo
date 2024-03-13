@@ -10,6 +10,10 @@ students-own [
   sitting
 ]
 
+teachers-own [
+  heading-to-table
+]
+
 breed [students student]
 breed [teachers teacher]
 
@@ -53,10 +57,56 @@ end
 to go
   ifelse ticks mod 600 < 500 [
     move-students-to-chairs
+    teacher-do-stuff
   ] [
     scatter-students
+    teacher-leave
   ]
   tick
+end
+
+to teacher-do-stuff
+  ask patch 16 15 [
+    ifelse not any? teachers [
+      sprout-teachers 1 [
+        set shape "person"
+        set heading-to-table 1
+      ]
+    ] [
+      ask teachers[move-teacher]
+    ]
+  ]
+end
+
+to teacher-leave
+  ask teachers[
+    set heading-to-table 2
+    move-teacher
+  ]
+end
+
+
+to move-teacher
+  (ifelse
+    heading-to-table = 0 [
+      ;move
+    ]
+    heading-to-table = 1 [
+      face patch 0 15
+      fd 1
+      if patch-here = patch 0 15 [
+        set heading-to-table 0
+      ]
+    ]
+    heading-to-table = 2 [
+      ifelse patch-here = patch 16 15 [
+        die
+      ] [
+        face patch 16 15
+        fd 1
+      ]
+    ]
+  )
 end
 
 to move-students-to-chairs
