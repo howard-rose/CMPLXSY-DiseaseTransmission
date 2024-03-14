@@ -51,9 +51,18 @@ to spawn-students
     setxy 16 -8
     set shape "person"
     set sitting 0
-    set color one-of remove brown base-colors ; sets the color to a random color that is not brown
+    set-infection
 ]
 end
+
+to set-infection
+  let infect coin-flip
+  set infection-state infect
+  (ifelse infection-state = 0 [set color green]
+    infection-state = 1 [set color red]
+    infection-state = 2 [set color blue])
+end
+
 to go
   ifelse ticks mod 600 < 500 [
     move-students-to-chairs
@@ -71,6 +80,7 @@ to teacher-do-stuff
       sprout-teachers 1 [
         set shape "person"
         set heading-to-table 1
+        set-infection
       ]
     ] [
       ask teachers[move-teacher]
@@ -123,30 +133,6 @@ to move-students-to-chairs
       ]
     ]
   ]
-;  ask students [
-;    let target-chair min-one-of (patches in-cone 100 360 with [pcolor = brown]) [distance myself]
-;    ifelse target-chair = patch-here [
-;      if count turtles-on patch-here > 1
-;      [
-;        rt random 360
-;        fd 1
-;      ]
-;    ]
-;    [
-;      ifelse ((target-chair != nobody) and (not any? turtles-on target-chair))
-;      [
-;        set heading(towards target-chair)
-;        let distance-to-chair round distance target-chair
-
-;        let movement min list distance-to-chair 2
-;        fd movement
-;      ]
-;      [
-;        rt random 360
-;        fd 1
-;      ]
-;    ]
-;  ]
 end
 
 to scatter-students
@@ -155,6 +141,10 @@ to scatter-students
     rt random 360
     fd 1
   ]
+end
+
+to-report coin-flip
+ report random 3
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -217,6 +207,36 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+13
+280
+185
+313
+num-infected
+num-infected
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+17
+367
+189
+400
+num-recovered
+num-recovered
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
