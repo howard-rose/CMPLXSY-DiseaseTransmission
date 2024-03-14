@@ -8,10 +8,15 @@ turtles-own [
 
 students-own [
   sitting
+  current-target
 ]
 
 teachers-own [
   heading-to-table
+]
+
+links-own [
+  closeness
 ]
 
 breed [students student]
@@ -24,6 +29,7 @@ to setup
   spawn-chairs
   spawn-teachers-table
   spawn-students
+  wire1
 end
 
 to spawn-chairs
@@ -55,6 +61,18 @@ to spawn-students
 ]
 end
 
+to wire1
+  ask links [ die ]
+  ask students [
+    create-link-with one-of other students
+  ]
+  ask links [
+    set closeness random 100 + 1
+    set label closeness
+    hide-link
+  ]
+end
+
 to set-infection
   let infect coin-flip
   set infection-state infect
@@ -64,7 +82,7 @@ to set-infection
 end
 
 to go
-  ifelse ticks mod 600 < 500 [
+  ifelse ticks mod 200 < 100 [
     move-students-to-chairs
     teacher-do-stuff
   ] [
@@ -120,6 +138,9 @@ to move-teacher
 end
 
 to move-students-to-chairs
+  ask students [
+    set current-target nobody
+  ]
   ask students with [sitting = 0] [
     let targets (patches with [pcolor = brown] with [not any? turtles-here])
     let target min-one-of targets [distance myself]
@@ -138,8 +159,18 @@ end
 to scatter-students
   ask students [
     set sitting 0
-    rt random 360
-    fd 1
+  ]
+  ask n-of 25 students [
+    let chosen nobody
+    let friends my-links with [closeness > 50]
+    if any? friends [
+       ask one-of friends [set chosen other-end]
+    ]
+    set current-target chosen
+  ]
+  ask students with [current-target != nobody] [
+    face current-target
+    if distance current-target > 3 [fd 1]
   ]
 end
 
@@ -192,10 +223,10 @@ NIL
 1
 
 BUTTON
-88
-155
-151
-188
+74
+133
+137
+166
 NIL
 go
 T
@@ -224,10 +255,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-17
-367
-189
-400
+13
+316
+185
+349
 num-recovered
 num-recovered
 0
