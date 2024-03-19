@@ -4,6 +4,8 @@ patches-own [
 
 turtles-own [
   infection-state
+  infection-counter
+  recovery-counter
 ]
 
 students-own [
@@ -58,6 +60,7 @@ to spawn-students
     set shape "person"
     set sitting 0
     set-infection
+    set infection-counter 0
 ]
 end
 
@@ -88,7 +91,9 @@ to go
   ] [
     scatter-students
     teacher-leave
+    infect-others
   ]
+  update-infection
   tick
 end
 
@@ -176,6 +181,43 @@ end
 
 to-report coin-flip
  report random 3
+end
+
+to update-infection
+  ask turtles with [infection-state = 1] [
+    set infection-counter infection-counter + 1
+    if infection-counter >= 500 [
+      set infection-state 2
+      set infection-counter 0
+      set recovery-counter 0
+      set color blue
+    ]
+  ]
+
+  ask turtles with [infection-state = 2] [
+    ifelse recovery-counter >= 100 [
+      set infection-state 0
+      set recovery-counter 0
+      set infection-counter 0
+      set color green
+    ] [
+      set recovery-counter recovery-counter + 1
+    ]
+  ]
+end
+
+to infect-others
+  ask turtles with [infection-state = 1] [
+    ask turtles in-radius 3 [
+      if infection-state = 0 [
+        let infect random 100
+        if infect >= 96 [
+          set infection-state 1
+          set color red
+        ]
+      ]
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
