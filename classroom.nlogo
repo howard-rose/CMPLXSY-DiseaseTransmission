@@ -114,7 +114,6 @@ to go
   infect-others
   reset-furniture-color
   update-infection
-  ask turtles [set label infection-state ]
   tick
 end
 
@@ -234,7 +233,7 @@ end
 to update-infection
   ask turtles with [infection-state = 1] [
     set infection-counter infection-counter + 1
-    if infection-counter >= 500 [
+    if infection-counter >= 10 * infection-time[
       set infection-state 2
       set infection-counter 0
       set recovery-counter 0
@@ -243,7 +242,7 @@ to update-infection
   ]
 
   ask turtles with [infection-state = 2] [
-    ifelse recovery-counter >= 100 [
+    ifelse recovery-counter >= 10 * recovery-time [
       set infection-state 0
       set recovery-counter 0
       set infection-counter 0
@@ -266,9 +265,9 @@ to infect-patch ;; turtle procedure
 end
 
 to update-droplet ;; patch procedure
-  diffuse droplet (diffusion-rate / 100)
+  diffuse droplet (droplet-diffusion-rate / 100)
   ask patches [
-    set droplet droplet * (100 - evaporation-rate) / 100
+    set droplet droplet * (100 - droplet-evaporation-rate) / 100
     ifelse show-droplet [
       set pcolor scale-color sky droplet 0.1 5
     ][
@@ -290,7 +289,7 @@ end
 to wear-mask
   ask turtles [
     let mask random 100
-    ifelse mask < wearing-mask-probability
+    ifelse mask < wearing-mask-rate
     [
       set wearing-mask? true
       if show-mask [set label "v"]
@@ -330,10 +329,10 @@ ticks
 30.0
 
 BUTTON
-74
-96
-137
-129
+26
+49
+89
+82
 NIL
 setup
 NIL
@@ -347,10 +346,10 @@ NIL
 1
 
 BUTTON
-74
-133
-137
-166
+113
+50
+176
+83
 NIL
 go
 T
@@ -364,10 +363,10 @@ NIL
 1
 
 SLIDER
-13
-280
-185
-313
+26
+385
+198
+418
 num-infected
 num-infected
 0
@@ -379,10 +378,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-13
-316
-185
-349
+26
+421
+198
+454
 num-recovered
 num-recovered
 0
@@ -394,12 +393,12 @@ NIL
 HORIZONTAL
 
 SLIDER
-15
-244
-187
-277
-diffusion-rate
-diffusion-rate
+26
+133
+198
+166
+droplet-diffusion-rate
+droplet-diffusion-rate
 0
 99
 49.0
@@ -409,25 +408,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-16
-199
-188
-232
-evaporation-rate
-evaporation-rate
+26
+91
+207
+124
+droplet-evaporation-rate
+droplet-evaporation-rate
 0
 99
-31.0
+30.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-18
-453
-141
-486
+531
+457
+646
+490
 show-droplet
 show-droplet
 0
@@ -453,12 +452,68 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot count turtles with [infection-state = 1]"
 
 SLIDER
-15
-354
-187
-387
+26
+302
+198
+335
 mask-efficacy
 mask-efficacy
+0
+100
+78.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+26
+343
+198
+376
+wearing-mask-rate
+wearing-mask-rate
+0
+100
+46.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+409
+457
+525
+490
+show-mask
+show-mask
+0
+1
+-1000
+
+SLIDER
+26
+172
+198
+205
+virus-transmissibility
+virus-transmissibility
+0
+100
+90.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+26
+215
+198
+248
+infection-time
+infection-time
 0
 100
 50.0
@@ -468,41 +523,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-11
-397
+27
+258
 199
-430
-wearing-mask-probability
-wearing-mask-probability
+291
+recovery-time
+recovery-time
 0
 100
-97.0
-1
-1
-NIL
-HORIZONTAL
-
-SWITCH
-17
-497
-134
-530
-show-mask
-show-mask
-0
-1
--1000
-
-SLIDER
-196
-469
-368
-502
-virus-transmissibility
-virus-transmissibility
-0
-100
-87.0
+10.0
 1
 1
 NIL
