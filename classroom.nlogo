@@ -235,7 +235,8 @@ to infect-others
   ]
 end
 
-to infect-patch ;; infect patch based on the turtles
+;; infect patches based on the turtles
+to infect-patch ;; turtle procedure
   ask turtles with [infection-state = 1] [
     set droplet (droplet + 60)
   ]
@@ -245,7 +246,11 @@ to update-droplet ;; patch procedure
   diffuse droplet (diffusion-rate / 100)
   ask patches [
     set droplet droplet * (100 - evaporation-rate) / 100
-    set pcolor scale-color green droplet 0.1 5
+    ifelse show-droplet [
+      set pcolor scale-color sky droplet 0.1 5
+    ][
+      set pcolor black
+    ]
   ]
 end
 
@@ -309,7 +314,7 @@ BUTTON
 166
 NIL
 go
-T
+NIL
 1
 T
 OBSERVER
@@ -378,6 +383,17 @@ evaporation-rate
 1
 NIL
 HORIZONTAL
+
+SWITCH
+43
+368
+166
+401
+show-droplet
+show-droplet
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
