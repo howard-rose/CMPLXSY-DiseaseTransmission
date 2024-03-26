@@ -43,7 +43,7 @@ to spawn-chairs
   repeat 5 [
     set x -12
     repeat 9 [
-      ask patch x y [set pcolor brown]
+      ask patch x y [set pcolor gray ]
       ask patch x y [set chair (1)]
       set x x + 3
     ]
@@ -103,14 +103,40 @@ to go
   ] [
     scatter-students
     teacher-leave
-    infect-others
   ]
   infect-patch
   update-droplet
+  infect-others
   reset-furniture-color
   update-infection
   tick
 end
+
+to infect-others
+  ask turtles with [infection-state = 0] [
+    if any? patches with [droplet > 0] in-radius 2 [
+        let infect random 100
+        if infect >= 96 [
+          set infection-state 1
+          set color red
+        ]
+      ]
+  ]
+end
+
+;to infect-others
+;  ask turtles with [infection-state = 1] [
+;    ask turtles in-radius 3 [
+;      if infection-state = 0 [
+;        let infect random 100
+;        if infect >= 96 [
+;          set infection-state 1
+;          set color red
+;        ]
+;      ]
+;    ]
+;  ]
+;end
 
 to teacher-do-stuff
   ask patch 16 15 [
@@ -162,7 +188,7 @@ to move-students-to-chairs
     set current-target nobody
   ]
   ask students with [sitting = 0] [
-    let targets (patches with [pcolor = brown] with [not any? turtles-here])
+    let targets (patches with [pcolor = grey] with [not any? turtles-here])
     let target min-one-of targets [distance myself]
     if target != nobody [
       face target
@@ -221,19 +247,6 @@ to update-infection
   ]
 end
 
-to infect-others
-  ask turtles with [infection-state = 1] [
-    ask turtles in-radius 3 [
-      if infection-state = 0 [
-        let infect random 100
-        if infect >= 96 [
-          set infection-state 1
-          set color red
-        ]
-      ]
-    ]
-  ]
-end
 
 ;; infect patches based on the turtles
 to infect-patch ;; turtle procedure
@@ -256,7 +269,7 @@ end
 
 to reset-furniture-color ;; patch procedure
   ask patches with [chair = 1] [
-    set pcolor brown
+    set pcolor grey
   ]
   ask patches with [table = 1] [
     set pcolor yellow
@@ -314,7 +327,7 @@ BUTTON
 166
 NIL
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -378,7 +391,7 @@ evaporation-rate
 evaporation-rate
 0
 99
-50.0
+87.0
 1
 1
 NIL
@@ -391,7 +404,7 @@ SWITCH
 401
 show-droplet
 show-droplet
-1
+0
 1
 -1000
 
