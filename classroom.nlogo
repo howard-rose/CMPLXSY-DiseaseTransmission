@@ -1,5 +1,7 @@
 patches-own [
-
+  chair
+  table
+  droplet
 ]
 
 turtles-own [
@@ -42,6 +44,7 @@ to spawn-chairs
     set x -12
     repeat 9 [
       ask patch x y [set pcolor brown]
+      ask patch x y [set chair (1)]
       set x x + 3
     ]
     set y y + 3
@@ -49,9 +52,18 @@ to spawn-chairs
 end
 
 to spawn-teachers-table
-  ask patch -1 14 [set pcolor yellow]
-  ask patch 0 14 [set pcolor yellow]
-  ask patch 1 14 [set pcolor yellow]
+  ask patch -1 14 [
+    set pcolor yellow
+    set table 1
+  ]
+  ask patch 0 14 [
+    set pcolor yellow
+    set table 1
+  ]
+  ask patch 1 14 [
+    set pcolor yellow
+    set table 1
+  ]
 end
 
 to spawn-students
@@ -93,6 +105,9 @@ to go
     teacher-leave
     infect-others
   ]
+  infect-patch
+  update-droplet
+  reset-furniture-color
   update-infection
   tick
 end
@@ -219,6 +234,29 @@ to infect-others
     ]
   ]
 end
+
+to infect-patch ;; infect patch based on the turtles
+  ask turtles with [infection-state = 1] [
+    set droplet (droplet + 60)
+  ]
+end
+
+to update-droplet ;; patch procedure
+  diffuse droplet (diffusion-rate / 100)
+  ask patches [
+    set droplet droplet * (100 - evaporation-rate) / 100
+    set pcolor scale-color green droplet 0.1 5
+  ]
+end
+
+to reset-furniture-color ;; patch procedure
+  ask patches with [chair = 1] [
+    set pcolor brown
+  ]
+  ask patches with [table = 1] [
+    set pcolor yellow
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -305,6 +343,36 @@ num-recovered
 num-recovered
 0
 100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+15
+244
+187
+277
+diffusion-rate
+diffusion-rate
+0
+99
+51.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+16
+199
+188
+232
+evaporation-rate
+evaporation-rate
+0
+99
 50.0
 1
 1
