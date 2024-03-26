@@ -8,6 +8,7 @@ turtles-own [
   infection-state
   infection-counter
   recovery-counter
+  wearing-mask?
 ]
 
 students-own [
@@ -33,6 +34,7 @@ to setup
   spawn-chairs
   spawn-teachers-table
   spawn-students
+  wear-mask
   wire1
 end
 
@@ -50,6 +52,7 @@ to spawn-chairs
     set y y + 3
   ]
 end
+
 
 to spawn-teachers-table
   ask patch -1 14 [
@@ -73,6 +76,7 @@ to spawn-students
     set sitting 0
     set-infection
     set infection-counter 0
+    set wearing-mask? false
 ]
 end
 
@@ -91,12 +95,13 @@ end
 to set-infection
   let infect coin-flip
   set infection-state infect
-  (ifelse infection-state = 0 [set color green]
+  (ifelse infection-state = 0 [set color blue]
     infection-state = 1 [set color red]
-    infection-state = 2 [set color blue])
+    infection-state = 2 [set color yellow])
 end
 
 to go
+  ;if ticks mod 200 = 1 [wear-mask]
   ifelse ticks mod 200 < 100 [
     move-students-to-chairs
     teacher-do-stuff
@@ -109,12 +114,13 @@ to go
   infect-others
   reset-furniture-color
   update-infection
+  ask turtles [set label infection-state ]
   tick
 end
 
 to infect-others
   ask turtles with [infection-state = 0] [
-    if any? patches with [droplet > 0] in-radius 2 [
+    if any? patches with [droplet > 100 - virus-transmissibility] in-radius 2 [
         let infect random 100
         if infect >= 96 [
           set infection-state 1
@@ -145,6 +151,7 @@ to teacher-do-stuff
         set shape "person"
         set heading-to-table 1
         set-infection
+        set wearing-mask? false
       ]
     ] [
       ask teachers[move-teacher]
@@ -231,7 +238,7 @@ to update-infection
       set infection-state 2
       set infection-counter 0
       set recovery-counter 0
-      set color blue
+      set color yellow
     ]
   ]
 
@@ -240,7 +247,7 @@ to update-infection
       set infection-state 0
       set recovery-counter 0
       set infection-counter 0
-      set color green
+      set color blue
     ] [
       set recovery-counter recovery-counter + 1
     ]
@@ -251,7 +258,10 @@ end
 ;; infect patches based on the turtles
 to infect-patch ;; turtle procedure
   ask turtles with [infection-state = 1] [
-    set droplet (droplet + 60)
+    let release 60
+
+    if wearing-mask? [set release release * (1 - mask-efficacy / 100)]
+    set droplet (droplet + release)
   ]
 end
 
@@ -273,6 +283,22 @@ to reset-furniture-color ;; patch procedure
   ]
   ask patches with [table = 1] [
     set pcolor yellow
+  ]
+end
+
+
+to wear-mask
+  ask turtles [
+    let mask random 100
+    ifelse mask < wearing-mask-probability
+    [
+      set wearing-mask? true
+      if show-mask [set label "v"]
+    ]
+    [
+      set wearing-mask? false
+      set label ""
+    ]
   ]
 end
 @#$#@#$#@
@@ -304,9 +330,9 @@ ticks
 30.0
 
 BUTTON
-73
+74
 96
-136
+137
 129
 NIL
 setup
@@ -346,7 +372,7 @@ num-infected
 num-infected
 0
 100
-50.0
+89.0
 1
 1
 NIL
@@ -361,7 +387,7 @@ num-recovered
 num-recovered
 0
 100
-50.0
+100.0
 1
 1
 NIL
@@ -376,7 +402,7 @@ diffusion-rate
 diffusion-rate
 0
 99
-51.0
+49.0
 1
 1
 NIL
@@ -391,22 +417,96 @@ evaporation-rate
 evaporation-rate
 0
 99
-87.0
+31.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-43
-368
-166
-401
+18
+453
+141
+486
 show-droplet
 show-droplet
 0
 1
 -1000
+
+PLOT
+660
+14
+960
+227
+Infection rate
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles with [infection-state = 1]"
+
+SLIDER
+15
+354
+187
+387
+mask-efficacy
+mask-efficacy
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+11
+397
+199
+430
+wearing-mask-probability
+wearing-mask-probability
+0
+100
+97.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+17
+497
+134
+530
+show-mask
+show-mask
+0
+1
+-1000
+
+SLIDER
+196
+469
+368
+502
+virus-transmissibility
+virus-transmissibility
+0
+100
+87.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
