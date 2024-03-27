@@ -111,7 +111,9 @@ to go
   ]
   infect-patch
   update-droplet
-  infect-others
+  if ticks mod 3 = 2 [
+    infect-others
+  ]
   reset-furniture-color
   update-infection
   tick
@@ -120,12 +122,21 @@ end
 to infect-others
   ask turtles with [infection-state = 0] [
     if any? patches with [droplet > 100 - virus-transmissibility] in-radius 2 [
-        let infect random 100
-        if infect >= 96 [
+      let infect random 100
+      let mask-percent-infection 50 + (mask-efficacy / 2)
+      ifelse wearing-mask? = true[
+        if infect >= mask-percent-infection [
           set infection-state 1
           set color red
         ]
       ]
+      [
+        if infect >= 50 [
+          set infection-state 1
+          set color red
+        ]
+      ]
+    ]
   ]
 end
 
@@ -460,7 +471,7 @@ mask-efficacy
 mask-efficacy
 0
 100
-78.0
+77.0
 1
 1
 NIL
@@ -536,6 +547,39 @@ recovery-time
 1
 NIL
 HORIZONTAL
+
+MONITOR
+679
+246
+736
+291
+infected
+count students with [infection-state = 1]
+17
+1
+11
+
+MONITOR
+743
+247
+816
+292
+recovering
+count students with [infection-state = 2]
+17
+1
+11
+
+MONITOR
+822
+246
+879
+291
+normal
+count students with [infection-state = 0]
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
