@@ -1,3 +1,7 @@
+globals[
+  transmissionrate
+]
+
 patches-own [
   chair
   table
@@ -101,7 +105,6 @@ to set-infection
 end
 
 to go
-  ;if ticks mod 200 = 1 [wear-mask]
   ifelse ticks mod 200 < 100 [
     move-students-to-chairs
     teacher-do-stuff
@@ -109,50 +112,46 @@ to go
     scatter-students
     teacher-leave
   ]
+
   infect-patch
   update-droplet
-  if ticks mod 3 = 2 [
-    infect-others
-  ]
+
+  infect-others
+
   reset-furniture-color
+
   update-infection
+
   tick
 end
 
 to infect-others
+  let newtransmission 0
+  let totalsusceptible count turtles with [infection-state = 0]
+
   ask turtles with [infection-state = 0] [
-    if any? patches with [droplet > 100 - virus-transmissibility] in-radius 2 [
+    let transmissibility virus-transmissibility
+
+    ;if wearing-mask? [set transmissibility (100 - mask-efficacy) / 100 * transmissibility ]
+    let droplets-required 100 - transmissibility
+
+    if any? patches with [droplet > droplets-required] in-radius 2
+    [
       let infect random 100
-      let mask-percent-infection 50 + (mask-efficacy / 2)
-      ifelse wearing-mask? = true[
-        if infect >= mask-percent-infection [
+      let mask-percent-infection 50
+      if wearing-mask? [set mask-percent-infection 50 + (mask-efficacy / 2)]
+        if infect > mask-percent-infection [
           set infection-state 1
           set color red
+          set newtransmission newtransmission + 1
         ]
-      ]
-      [
-        if infect >= 50 [
-          set infection-state 1
-          set color red
-        ]
-      ]
     ]
   ]
-end
 
-;to infect-others
-;  ask turtles with [infection-state = 1] [
-;    ask turtles in-radius 3 [
-;      if infection-state = 0 [
-;        let infect random 100
-;        if infect >= 96 [
-;          set infection-state 1
-;          set color red
-;        ]
-;      ]
-;    ]
-;  ]
-;end
+  ifelse totalsusceptible = 0
+  [set transmissionrate 0]
+  [set transmissionrate newtransmission / totalsusceptible]
+end
 
 to teacher-do-stuff
   ask patch 16 15 [
@@ -357,9 +356,9 @@ NIL
 1
 
 BUTTON
-113
+114
 50
-176
+177
 83
 NIL
 go
@@ -412,7 +411,7 @@ droplet-diffusion-rate
 droplet-diffusion-rate
 0
 99
-49.0
+47.0
 1
 1
 NIL
@@ -427,7 +426,7 @@ droplet-evaporation-rate
 droplet-evaporation-rate
 0
 99
-30.0
+27.0
 1
 1
 NIL
@@ -471,7 +470,7 @@ mask-efficacy
 mask-efficacy
 0
 100
-77.0
+55.0
 1
 1
 NIL
@@ -486,7 +485,7 @@ wearing-mask-rate
 wearing-mask-rate
 0
 100
-46.0
+49.0
 1
 1
 NIL
@@ -512,7 +511,7 @@ virus-transmissibility
 virus-transmissibility
 0
 100
-90.0
+82.0
 1
 1
 NIL
@@ -580,6 +579,24 @@ count students with [infection-state = 0]
 17
 1
 11
+
+PLOT
+667
+313
+963
+463
+Transmission rate
+NIL
+NIL
+0.0
+1.0
+0.0
+1.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot transmissionrate"
 
 @#$#@#$#@
 ## WHAT IS IT?
