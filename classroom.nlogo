@@ -123,10 +123,10 @@ to go
 
   if ticks mod 3 = 2 [
     infect-patch
-    update-droplet
+
   ]
 
-
+update-droplet
   infect-others
 
   reset-furniture-color
@@ -282,7 +282,7 @@ end
 to infect-patch ;; turtle procedure
   ask turtles with [infection-state = 1] [
     if random 2 = 0 [
-      let release random 60
+      let release random viral-load
 
       if wearing-mask? [set release release * (1 - mask-efficacy / 100)]
       set droplet (droplet + release)
@@ -427,7 +427,7 @@ droplet-diffusion-rate
 droplet-diffusion-rate
 0
 99
-60.0
+27.0
 1
 1
 NIL
@@ -442,7 +442,7 @@ droplet-evaporation-rate
 droplet-evaporation-rate
 0
 99
-29.0
+8.0
 1
 1
 NIL
@@ -613,6 +613,21 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot transmissionrate"
+
+SLIDER
+26
+463
+198
+496
+viral-load
+viral-load
+0
+100
+37.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
