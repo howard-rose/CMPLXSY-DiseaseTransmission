@@ -6,6 +6,7 @@ patches-own [
   chair
   table
   droplet
+  targeted
 ]
 
 turtles-own [
@@ -40,6 +41,10 @@ to setup
   spawn-students
   wear-mask
   wire1
+
+  ask patches [
+    set targeted false
+  ]
 end
 
 to spawn-chairs
@@ -81,6 +86,7 @@ to spawn-students
     set-infection
     set infection-counter 0
     set wearing-mask? false
+    set current-target nobody
 ]
 end
 
@@ -200,20 +206,20 @@ to move-teacher
 end
 
 to move-students-to-chairs
-  ask students [
-    set current-target nobody
-  ]
   ask students with [sitting = 0] [
-    let targets (patches with [pcolor = grey] with [not any? turtles-here])
-    let target min-one-of targets [distance myself]
-    if target != nobody [
-      face target
-      ifelse distance target <= 1 [
-        move-to target
-        set sitting 1
-      ] [
-        fd 1
+    let targets (patches with [pcolor = grey and not any? turtles-here with [sitting = 1] and targeted = false])
+    if current-target = nobody [
+      set current-target one-of targets
+      ask current-target [
+        set targeted true
       ]
+    ]
+    face current-target
+    ifelse distance current-target <= 1 [
+      move-to current-target
+      set sitting 1
+    ] [
+      fd 1
     ]
   ]
 end
@@ -411,7 +417,7 @@ droplet-diffusion-rate
 droplet-diffusion-rate
 0
 99
-47.0
+99.0
 1
 1
 NIL
@@ -426,7 +432,7 @@ droplet-evaporation-rate
 droplet-evaporation-rate
 0
 99
-27.0
+72.0
 1
 1
 NIL
