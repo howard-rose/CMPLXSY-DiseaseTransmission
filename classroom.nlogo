@@ -121,8 +121,11 @@ to go
     teacher-leave
   ]
 
-  infect-patch
-  update-droplet
+  if ticks mod 3 = 2 [
+    infect-patch
+    update-droplet
+  ]
+
 
   infect-others
 
@@ -278,10 +281,12 @@ end
 ;; infect patches based on the turtles
 to infect-patch ;; turtle procedure
   ask turtles with [infection-state = 1] [
-    let release 60
+    if random 2 = 0 [
+      let release random 60
 
-    if wearing-mask? [set release release * (1 - mask-efficacy / 100)]
-    set droplet (droplet + release)
+      if wearing-mask? [set release release * (1 - mask-efficacy / 100)]
+      set droplet (droplet + release)
+    ]
   ]
 end
 
@@ -422,7 +427,7 @@ droplet-diffusion-rate
 droplet-diffusion-rate
 0
 99
-99.0
+60.0
 1
 1
 NIL
@@ -437,7 +442,7 @@ droplet-evaporation-rate
 droplet-evaporation-rate
 0
 99
-72.0
+29.0
 1
 1
 NIL
