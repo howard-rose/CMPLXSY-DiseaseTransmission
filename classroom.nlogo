@@ -19,6 +19,7 @@ turtles-own [
 students-own [
   sitting
   current-target
+  target-chair
 ]
 
 teachers-own [
@@ -86,6 +87,7 @@ to spawn-students
     set-infection
     set infection-counter 0
     set wearing-mask? false
+    set target-chair nobody
     set current-target nobody
 ]
 end
@@ -207,16 +209,16 @@ end
 
 to move-students-to-chairs
   ask students with [sitting = 0] [
-    let targets (patches with [pcolor = grey and not any? turtles-here with [sitting = 1] and targeted = false])
-    if current-target = nobody [
-      set current-target one-of targets
-      ask current-target [
+    if target-chair = nobody [
+      let targets (patches with [pcolor = grey and not any? turtles-here with [sitting = 1] and targeted = false])
+      set target-chair one-of targets
+      ask target-chair [
         set targeted true
       ]
     ]
-    face current-target
-    ifelse distance current-target <= 1 [
-      move-to current-target
+    face target-chair
+    ifelse distance target-chair <= 1 [
+      move-to target-chair
       set sitting 1
     ] [
       fd 1
@@ -227,6 +229,9 @@ end
 to scatter-students
   ask students [
     set sitting 0
+  ]
+  ask patches [
+    set targeted false
   ]
   ask n-of 25 students [
     let chosen nobody
