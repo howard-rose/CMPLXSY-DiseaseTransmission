@@ -90,6 +90,10 @@ to spawn-students
     set target-chair nobody
     set current-target nobody
 ]
+  ask n-of num-infected students [
+    set color red
+    set infection-state 1
+  ]
 end
 
 to wire1
@@ -105,11 +109,13 @@ to wire1
 end
 
 to set-infection
-  let infect coin-flip
-  set infection-state infect
-  (ifelse infection-state = 0 [set color blue]
-    infection-state = 1 [set color red]
-    infection-state = 2 [set color yellow])
+  let status coin-flip
+  (ifelse status = 0 [
+    set color blue
+    set infection-state 0]
+    status = 1 [
+    set color yellow
+    set infection-state 2])
 end
 
 to go
@@ -251,7 +257,7 @@ to scatter-students
 end
 
 to-report coin-flip
- report random 3
+ report random 2
 end
 
 to update-infection
@@ -396,23 +402,8 @@ SLIDER
 num-infected
 num-infected
 0
-100
-89.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-26
-421
-198
-454
-num-recovered
-num-recovered
-0
-100
-100.0
+45
+17.0
 1
 1
 NIL
@@ -501,7 +492,7 @@ wearing-mask-rate
 wearing-mask-rate
 0
 100
-49.0
+45.0
 1
 1
 NIL
@@ -615,10 +606,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot transmissionrate"
 
 SLIDER
-26
-463
-198
-496
+25
+426
+197
+459
 viral-load
 viral-load
 0
