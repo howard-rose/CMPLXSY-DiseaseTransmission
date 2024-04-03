@@ -14,6 +14,7 @@ turtles-own [
   infection-counter
   recovery-counter
   wearing-mask?
+  cough-counter
 ]
 
 students-own [
@@ -89,6 +90,7 @@ to spawn-students
     set wearing-mask? false
     set target-chair nobody
     set current-target nobody
+    set cough-counter random ticks-to-spread-infection
 ]
   ask n-of num-infected students [
     set color red
@@ -127,12 +129,10 @@ to go
     teacher-leave
   ]
 
-  if ticks mod ticks-to-spread-infection = ticks-to-spread-infection - 1 [
-    infect-patch
 
-  ]
+  infect-patch
 
-update-droplet
+  update-droplet
   infect-others
 
   reset-furniture-color
@@ -287,12 +287,16 @@ end
 ;; infect patches based on the turtles
 to infect-patch ;; turtle procedure
   ask turtles with [infection-state = 1] [
-    if random 2 = 0 [
+    set cough-counter cough-counter + 1
+    ifelse random 2 = 0 and cough-counter = ticks-to-spread-infection [
       let release random viral-load
 
       if wearing-mask? [set release release * (1 - mask-efficacy / 100)]
       set droplet (droplet + release)
-    ]
+      set cough-counter 0
+    ] [if cough-counter >= ticks-to-spread-infection [
+      set cough-counter 0
+    ]]
   ]
 end
 
