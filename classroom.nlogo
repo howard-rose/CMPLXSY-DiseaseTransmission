@@ -127,7 +127,7 @@ to go
     teacher-leave
   ]
 
-  if ticks mod 3 = 2 [
+  if ticks mod ticks-to-spread-infection = ticks-to-spread-infection - 1 [
     infect-patch
 
   ]
@@ -418,7 +418,7 @@ droplet-diffusion-rate
 droplet-diffusion-rate
 0
 99
-27.0
+99.0
 1
 1
 NIL
@@ -518,7 +518,7 @@ virus-transmissibility
 virus-transmissibility
 0
 100
-82.0
+83.0
 1
 1
 NIL
@@ -613,8 +613,23 @@ SLIDER
 viral-load
 viral-load
 0
+1000
+70.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+23
+466
+208
+499
+ticks-to-spread-infection
+ticks-to-spread-infection
+0
 100
-37.0
+4.0
 1
 1
 NIL
