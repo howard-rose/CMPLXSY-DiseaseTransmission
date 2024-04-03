@@ -148,6 +148,7 @@ to go
 
   update-infection
 
+
   tick
 end
 
@@ -469,18 +470,18 @@ PLOT
 14
 960
 227
-Infection rate
+Percent infected
 NIL
 NIL
 0.0
-10.0
+100.0
 0.0
 10.0
 true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles with [infection-state = 1]"
+"default" 1.0 0 -16777216 true "" "plot ((count turtles with [infection-state = 1]) / 45) * 100"
 
 SLIDER
 26
@@ -562,7 +563,7 @@ recovery-time
 recovery-time
 0
 100
-52.0
+10.0
 1
 1
 NIL
@@ -628,7 +629,7 @@ viral-load
 viral-load
 0
 1000
-503.0
+764.0
 1
 1
 NIL
@@ -676,7 +677,7 @@ num-recovery
 num-recovery
 0
 45
-10.0
+0.0
 1
 1
 NIL
