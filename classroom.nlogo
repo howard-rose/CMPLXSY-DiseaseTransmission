@@ -86,7 +86,6 @@ to spawn-students
     setxy 16 -8
     set shape "person"
     set sitting 0
-    set-infection
     set infection-counter 0
     set wearing-mask? false
     set target-chair nobody
@@ -96,6 +95,15 @@ to spawn-students
   ask n-of num-infected students [
     set color red
     set infection-state 1
+
+  ]
+  ask n-of num-recovery students with [infection-state = 0] [
+    set color yellow
+    set infection-state 2
+
+  ]
+  ask students with [infection-state = 0] [
+    set color blue
   ]
 end
 
@@ -409,7 +417,7 @@ num-infected
 num-infected
 0
 45
-17.0
+15.0
 1
 1
 NIL
@@ -424,7 +432,7 @@ droplet-diffusion-rate
 droplet-diffusion-rate
 0
 99
-99.0
+84.0
 1
 1
 NIL
@@ -439,7 +447,7 @@ droplet-evaporation-rate
 droplet-evaporation-rate
 0
 99
-14.0
+8.0
 1
 1
 NIL
@@ -483,7 +491,7 @@ mask-efficacy
 mask-efficacy
 0
 100
-20.0
+50.0
 1
 1
 NIL
@@ -498,7 +506,7 @@ wearing-mask-rate
 wearing-mask-rate
 0
 100
-45.0
+50.0
 1
 1
 NIL
@@ -524,7 +532,7 @@ virus-transmissibility
 virus-transmissibility
 0
 100
-83.0
+80.0
 1
 1
 NIL
@@ -554,7 +562,7 @@ recovery-time
 recovery-time
 0
 100
-10.0
+52.0
 1
 1
 NIL
@@ -613,29 +621,29 @@ PENS
 
 SLIDER
 25
-426
+474
 197
-459
+507
 viral-load
 viral-load
 0
 1000
-76.0
+503.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-23
-466
-208
-499
+18
+516
+203
+549
 ticks-to-spread-infection
 ticks-to-spread-infection
 0
 100
-4.0
+25.0
 1
 1
 NIL
@@ -658,6 +666,32 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot droplets"
+
+SLIDER
+26
+429
+198
+462
+num-recovery
+num-recovery
+0
+45
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+886
+246
+943
+291
+mask
+count students with [wearing-mask? = true]
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
