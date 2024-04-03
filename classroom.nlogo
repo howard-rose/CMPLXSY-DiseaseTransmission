@@ -1,5 +1,6 @@
 globals[
   transmissionrate
+  droplets
 ]
 
 patches-own [
@@ -310,6 +311,7 @@ to update-droplet ;; patch procedure
       set pcolor black
     ]
   ]
+  set droplets sum [droplet] of patches
 end
 
 to reset-furniture-color ;; patch procedure
@@ -437,7 +439,7 @@ droplet-evaporation-rate
 droplet-evaporation-rate
 0
 99
-8.0
+14.0
 1
 1
 NIL
@@ -481,7 +483,7 @@ mask-efficacy
 mask-efficacy
 0
 100
-55.0
+20.0
 1
 1
 NIL
@@ -618,7 +620,7 @@ viral-load
 viral-load
 0
 1000
-70.0
+76.0
 1
 1
 NIL
@@ -638,6 +640,24 @@ ticks-to-spread-infection
 1
 NIL
 HORIZONTAL
+
+PLOT
+976
+277
+1176
+427
+Droplets
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot droplets"
 
 @#$#@#$#@
 ## WHAT IS IT?
